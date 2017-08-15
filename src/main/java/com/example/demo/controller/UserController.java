@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
         @RequestMapping("/user")
-        public User user(@RequestParam(value = "name", defaultValue = "Faruk") String name){
+        public User user(@RequestParam(value = "name", defaultValue = "Default") String name){
             return new User((long)(Math.random()*100), name);
         }
 
