@@ -1,7 +1,12 @@
-git psudo: false
+sudo: true
 language: java
+services: mysql
 jdk:
   - oraclejdk8
+before_script:
+  - mysql -u root -e 'CREATE DATABASE springboot;'
+  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('1234');"
 before_install:
   - chmod +x mvnw
+  
 
