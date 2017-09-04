@@ -1,20 +1,26 @@
 package com.example.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
-public class Role {
+public class Role implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Collection<User> users;
+    @JsonBackReference
+    private Set<User> users;
 
     @ManyToMany
     @JoinTable(
@@ -24,9 +30,12 @@ public class Role {
             ),
             inverseJoinColumns = @JoinColumn(
                     name = "privilege_id", referencedColumnName = "id"
-            )
+            ),
+            foreignKey = @ForeignKey(name = "FK_Role_Privileges"),
+            inverseForeignKey = @ForeignKey(name = "FK_Privileges_Role")
     )
-    private Collection<Privilege> privileges;
+    @JsonManagedReference
+    private Set<Privilege> privileges;
 
     public Role(String name) {
         this.name = name;
@@ -51,19 +60,19 @@ public class Role {
         this.name = name;
     }
 
-    public Collection<User> getUsers() {
+    public Set<User> getUsers() {
         return users;
     }
 
-    public void setUsers(Collection<User> users) {
+    public void setUsers(Set<User> users) {
         this.users = users;
     }
 
-    public Collection<Privilege> getPrivileges() {
+    public Set<Privilege> getPrivileges() {
         return privileges;
     }
 
-    public void setPrivileges(Collection<Privilege> privileges) {
+    public void setPrivileges(Set<Privilege> privileges) {
         this.privileges = privileges;
     }
 }

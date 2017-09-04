@@ -1,7 +1,8 @@
 package com.example.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Set;
 
 @Entity
 public class Privilege {
@@ -14,14 +15,14 @@ public class Privilege {
     private String name;
 
     @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
+    @JsonBackReference
+    private Set<Role> roles;
 
     public Privilege() {
     }
 
-    public Privilege(String name, Collection<Role> roles) {
+    public Privilege(String name) {
         this.name = name;
-        this.roles = roles;
     }
 
     public Long getId() {
@@ -40,11 +41,11 @@ public class Privilege {
         this.name = name;
     }
 
-    public Collection<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Collection<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 }

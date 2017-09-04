@@ -1,9 +1,13 @@
 package com.example.demo.service;
 
+import com.example.demo.domain.Role;
 import com.example.demo.domain.User;
-import com.example.demo.domain.UserRepository;
+import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -29,6 +33,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUser(Long id) {
         userRepository.delete(id);
+    }
+
+    @Override
+    public Set<User> getUsersByRoles(Role role) {
+        return userRepository.getUsersByRoles(role);
     }
 
     @Override

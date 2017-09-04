@@ -1,11 +1,13 @@
 package com.example.demo.domain;
 
-import javax.jws.soap.SOAPBinding;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
-import java.util.Collection;
+import java.io.Serializable;
+import java.util.Set;
 
 @Entity
-public class User {
+public class User implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,14 +27,18 @@ public class User {
 
     @ManyToMany
     @JoinTable(
+            name = "user_roles",
             joinColumns = @JoinColumn(
                     name = "user_id", referencedColumnName = "id"
             ),
             inverseJoinColumns = @JoinColumn(
                     name = "role_id", referencedColumnName = "id"
             )
+            ,foreignKey = @ForeignKey(name = "FK_User_Roles")
+            ,inverseForeignKey = @ForeignKey(name = "FK_Roles_User")
     )
-    private Collection<Role> roles;
+    @JsonManagedReference //prevent recursion inner objects in json
+    private Set<Role> roles;
 
     public User(String name, String surname, String email, String password) {
         this.name = name;
@@ -86,11 +92,12 @@ public class User {
         this.password = password;
     }
 
-    public Collection<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Collection<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
 }

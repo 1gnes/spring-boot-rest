@@ -1,13 +1,17 @@
 package com.example.demo.controller;
 
+import com.example.demo.domain.Role;
 import com.example.demo.domain.User;
+import com.example.demo.service.RoleService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
 
 @RestController
 @RequestMapping("/user")
@@ -16,35 +20,43 @@ public class UserController {
         @Autowired
         private UserService userService;
 
-        @RequestMapping("/{id}")
-        public String getById(@PathVariable Long id, Model model){
-            User user = userService.getUserById(id);
-            model.addAttribute("user",user);
-            return "user";
-        }
+        @Autowired
+        private RoleService roleService;
 
-        @RequestMapping("/save")
-        public String createUser(){
-            User user = new User("Test","test","test@mail.com","12421");
-            userService.saveUser(user);
-            return "User created";
+        @RequestMapping(value = "/{id}")
+        public ResponseEntity<User> getById(@PathVariable Long id){
+            return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
         }
 
         @RequestMapping("/add")
-        public String addUser(@RequestParam String name, @RequestParam String surname){
-            User user = new User();
-            user.setName(name);
-            user.setSurname(surname);
-            user.setEmail("test@mail.com");
-            user.setPassword("1241251");
-            userService.saveUser(user);
-            return "User added";
+        public User add(@RequestParam String name, @RequestParam String surname, @RequestParam String roleName){
+
+            Role role = roleService.getRoleByName(roleName);
+            if (role != null){
+                User user = new User();
+                user.setName(name);
+                user.setSurname(surname);
+                user.setEmail(name + "." +surname +"@mail.com");
+                user.setPassword(String.valueOf(user.hashCode()));
+                Set<Role> roleSet = new HashSet<Role>();
+                roleSet.add(role);
+                user.setRoles(roleSet);
+                return userService.saveUser(user);
+            }
+            else  {
+                return null;
+            }
         }
 
         @RequestMapping("/delete/{id}")
         public String deleteUser(@PathVariable Long id){
             userService.deleteUser(id);
             return "User deleted";
+        }
+
+        @RequestMapping("/adduser")
+        public ResponseEntity<User> addUser(@RequestBody User user){
+             return new ResponseEntity<User>(userService.saveUser(user), HttpStatus.OK);
         }
 }
 

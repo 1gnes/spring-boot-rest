@@ -1,4 +1,4 @@
-sudo: false
+git psudo: false
 language: java
 jdk:
   - oraclejdk8
