@@ -1,7 +1,11 @@
 sudo: false
 language: java
+services: mysql
 jdk:
   - oraclejdk8
+before_script:
+  - mysql -u root -e 'CREATE DATABASE springboot;'
 before_install:
   - chmod +x mvnw
+  
 
