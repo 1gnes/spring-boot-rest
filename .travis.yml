@@ -5,6 +5,8 @@ jdk:
   - oraclejdk8
 before_script:
   - mysql -u root -e 'CREATE DATABASE springboot;'
+  - mysql -u root -e "CREATE USER 'root'@'localhost' IDENTIFIED BY '1234';"
+  - mysql -u root -e "GRANT ALL ON springboot.* TO 'root'@'localhost';"
 before_install:
   - chmod +x mvnw
   
