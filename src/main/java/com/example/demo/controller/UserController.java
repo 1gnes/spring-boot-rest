@@ -29,34 +29,35 @@ public class UserController {
         }
 
         @RequestMapping("/add")
-        public User add(@RequestParam String name, @RequestParam String surname, @RequestParam String roleName){
-
+        public ResponseEntity<User> addUser(@RequestParam String name, @RequestParam String surname,
+                                            @RequestParam(required = false) String roleName){
+            User user = new User();
+            user.setName(name);
+            user.setSurname(surname);
+            user.setEmail(name + "." +surname +"@mail.com");
+            user.setPassword(String.valueOf(user.hashCode()));
             Role role = roleService.getRoleByName(roleName);
             if (role != null){
-                User user = new User();
-                user.setName(name);
-                user.setSurname(surname);
-                user.setEmail(name + "." +surname +"@mail.com");
-                user.setPassword(String.valueOf(user.hashCode()));
                 Set<Role> roleSet = new HashSet<Role>();
                 roleSet.add(role);
                 user.setRoles(roleSet);
-                return userService.saveUser(user);
             }
-            else  {
-                return null;
-            }
+            return new ResponseEntity<User>(userService.saveUser(user), HttpStatus.OK);
         }
 
         @RequestMapping("/delete/{id}")
-        public String deleteUser(@PathVariable Long id){
-            userService.deleteUser(id);
-            return "User deleted";
+        public ResponseEntity<String> deleteUser(@PathVariable Long id){
+            if (userService.getUserById(id) != null){
+                userService.deleteUser(id);
+                return new ResponseEntity("User was deleted", HttpStatus.OK);
+            }
+            else
+                return  new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
         }
 
-        @RequestMapping("/adduser")
-        public ResponseEntity<User> addUser(@RequestBody User user){
-             return new ResponseEntity<User>(userService.saveUser(user), HttpStatus.OK);
+        @RequestMapping("/all")
+        public ResponseEntity<Iterable<User>> allUsers(){
+            return new ResponseEntity<Iterable<User>>(userService.getAllUsers(), HttpStatus.OK);
         }
 }
 
